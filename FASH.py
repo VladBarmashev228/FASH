@@ -1,6 +1,9 @@
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox
+from datetime import date
+from datetime import timedelta
+
 
 
 def main_app():
@@ -86,7 +89,8 @@ def open_registration_window():
         conn.commit()
     POLZ_Button = tk.Button(reg_window, text='Cтать пользователем ФЭШ', font=('Arial', 21), bg='gray', command=register)
     POLZ_Button.grid(row=7, column=0)
-
+def get_monday(curdate):
+    return curdate - timedelta(days=curdate.weekday())
 
 def open_student_window():
     frame.pack_forget()
@@ -98,16 +102,23 @@ def open_student_window():
     PROFIL_Button = tk.Button(student_frame, text='Профиль', font=('Arial', 18), bg='gray')
     KLACC_Button = tk.Button(student_frame, text='Класс', font=('Arial', 18), bg='gray')
     days_frame=tk.Frame(student_frame, bg='gray')
+
     days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
     for day in days:
         tk.Button(days_frame, text=day, width=4, height=2, font=("Arial", 12)).pack(side='left', padx=5)
+        current_monday = get_monday(date.today())
+    month_Label = tk.Label(student_frame, bg='gray',text=current_monday.strftime('%B %Y'))
+
+
+    print(current_monday)
     PACPICANIE_Button.grid(row=0, column=0)
     OCENKN_Button.grid(row=0, column=1)
     D3_Button.grid(row=0, column=2)
     PROFIL_Button.grid(row=0, column=3)
     KLACC_Button.grid(row=0, column=4)
     student_frame.pack()
-    days_frame.pack()
+    # days_frame.pack()
+    month_Label.grid(row=2, column=2)
 
 def open_teaher_window():
     frame.pack_forget()
@@ -156,7 +167,7 @@ def open_login_window():
 
 root = tk.Tk()
 root.title('Фейковая Электронная Школа')
-root.geometry('912x512')
+root.geometry('1012x512')
 root.configure(bg='gray')
 
 
