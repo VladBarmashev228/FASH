@@ -3,6 +3,9 @@ import sqlite3
 from tkinter import messagebox
 from datetime import date
 from datetime import timedelta
+import os
+from tkinter import Tk, PhotoImage
+from PIL import Image, ImageTk
 
 
 
@@ -92,7 +95,17 @@ def open_registration_window():
 def get_monday(curdate):
     return curdate - timedelta(days=curdate.weekday())
 
+
+def update_week(delta=0):
+    global current_monday, buttons
+    current_monday += timedelta(weeks=delta)
+
+    for i in range(7):
+        day = current_monday + timedelta(days=i)
+        buttons[i].config(text=day.day)
+
 def open_student_window():
+    global current_monday, buttons
     frame.pack_forget()
     root.title('Дневник ФЭШ')
     student_frame=tk.Frame(root, bg='gray')
@@ -101,24 +114,34 @@ def open_student_window():
     D3_Button = tk.Button(student_frame, text='Домашние Задания', font=('Arial', 18), bg='gray')
     PROFIL_Button = tk.Button(student_frame, text='Профиль', font=('Arial', 18), bg='gray')
     KLACC_Button = tk.Button(student_frame, text='Класс', font=('Arial', 18), bg='gray')
-    days_frame=tk.Frame(student_frame, bg='gray')
+    days_frame=tk.Frame(root, bg='gray')
+    prev_button = tk.Button(days_frame, text ='←', font=('Arial', 18), command=lambda:update_week(-1))
+    next_button = tk.Button(days_frame, text ='→', font=('Arial', 18), command=lambda: update_week(1))
+
 
     days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
-    for day in days:
-        tk.Button(days_frame, text=day, width=4, height=2, font=("Arial", 12)).pack(side='left', padx=5)
-        current_monday = get_monday(date.today())
-    month_Label = tk.Label(student_frame, bg='gray',text=current_monday.strftime('%B %Y'))
 
-
+    current_monday = get_monday(date.today())
+    month_Label = tk.Label(days_frame, bg='gray',text=current_monday.strftime('%B %Y'), font=('Arial', 18))
+    month_Label.grid(row=0, column=0, columnspan=7)
+    buttons = []
+    for i,day in enumerate(['Пн','Вт','Ср','Чт','Пт','Сб','Вс']):
+        button = tk.Button(days_frame, text = '', width=4)
+        button.grid(row=1,column=i)
+        buttons.append(button)
+        tk.Label(days_frame,text=day, bg = 'gray', font=('Arial', 18)).grid(row=2,column=i)
     print(current_monday)
     PACPICANIE_Button.grid(row=0, column=0)
     OCENKN_Button.grid(row=0, column=1)
     D3_Button.grid(row=0, column=2)
     PROFIL_Button.grid(row=0, column=3)
     KLACC_Button.grid(row=0, column=4)
+    prev_button.grid(row=3,column=1)
+    next_button.grid(row=3,column=2)
     student_frame.pack()
-    # days_frame.pack()
-    month_Label.grid(row=2, column=2)
+    days_frame.pack()
+    update_week()
+
 
 def open_teaher_window():
     frame.pack_forget()
@@ -129,6 +152,7 @@ def open_teaher_window():
     FASH_V_Label.grid(row=0, column=0)
     Teacher_Label.grid(row=0, column=1)
     teacher_frame.pack(anchor='nw')
+
 def open_login_window():
     login_window = tk.Toplevel(root)
     login_window.geometry('912x512')
@@ -169,6 +193,10 @@ root = tk.Tk()
 root.title('Фейковая Электронная Школа')
 root.geometry('1012x512')
 root.configure(bg='gray')
+img = Image.open("FASH.png").resize((1000, 1000)) # Укажите нужный размер
+icon = ImageTk.PhotoImage(img)
+root.tk.call('wm', 'iconphoto', root._w, icon)
+
 
 
 # Регистрация или вход
@@ -187,5 +215,7 @@ register_button = tk.Button(frame, text='Регистрация', font=('Arial',
 auth_button = tk.Button(frame, text='Вход', font=('Arial', 21), bg='gray', fg='black', command=open_login_window)
 
 root.after(2000, main_app)
+current_monday = date.today()
+buttons = []
 frame.pack()
 root.mainloop()
