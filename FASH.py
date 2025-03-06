@@ -4,8 +4,8 @@ from tkinter import messagebox
 from datetime import date
 from datetime import timedelta
 import os
-from tkinter import Tk, PhotoImage
-from PIL import Image, ImageTk
+
+
 
 
 
@@ -94,18 +94,53 @@ def open_registration_window():
     POLZ_Button.grid(row=7, column=0)
 def get_monday(curdate):
     return curdate - timedelta(days=curdate.weekday())
+def define_month():
+    pass
+    global current_monday, days_frame
+    monday_month = current_monday.month
+    sunday=current_monday+timedelta(days=6)
+    print(current_monday, sunday)
+    sunday_month = sunday.month
+    print(monday_month)
+    print(sunday_month)
+    if monday_month == sunday_month:
+        month_Label.configure(text=current_monday.strftime('%B %Y'), font=('Arial', 18))
+    else:
+        f_month = current_monday.strftime('%B')
+        s_month = sunday.strftime('%B')
+        year1 = current_monday.strftime('%Y')
+        year2 = sunday.strftime('%Y')
+        text = f'{f_month} - {s_month} {year1}'
+        month_Label.configure(text=text)
 
 
 def update_week(delta=0):
-    global current_monday, buttons
+    global current_monday, buttons, month_Label
     current_monday += timedelta(weeks=delta)
-
+    define_month()
     for i in range(7):
         day = current_monday + timedelta(days=i)
         buttons[i].config(text=day.day)
+def open_PACPICANIE_window():
+    pass
+def open_OCENKI_widnow():
+    pass
+def open_D3_window():
+    pass
+def open_PROFIL_window():
+    pass
+def open_KLACC_window():
+    pass
+
+def open_PACPICANIE_teacher_window():
+    pass
+def open_HYPNALI_teacher_window():
+    pass
+def open_KLACCI_teacher_window():
+    pass
 
 def open_student_window():
-    global current_monday, buttons
+    global current_monday, buttons, month_Label, days_frame
     frame.pack_forget()
     root.title('Дневник ФЭШ')
     student_frame=tk.Frame(root, bg='gray')
@@ -114,41 +149,43 @@ def open_student_window():
     D3_Button = tk.Button(student_frame, text='Домашние Задания', font=('Arial', 18), bg='gray')
     PROFIL_Button = tk.Button(student_frame, text='Профиль', font=('Arial', 18), bg='gray')
     KLACC_Button = tk.Button(student_frame, text='Класс', font=('Arial', 18), bg='gray')
-    days_frame=tk.Frame(root, bg='gray')
-    prev_button = tk.Button(days_frame, text ='←', font=('Arial', 18), command=lambda:update_week(-1))
-    next_button = tk.Button(days_frame, text ='→', font=('Arial', 18), command=lambda: update_week(1))
+    # days_frame=tk.Frame(root, bg='gray')
+    prev_button = tk.Button(days_frame, text ='←', font=('Arial', 12), command=lambda:update_week(-1))
+    next_button = tk.Button(days_frame, text ='→', font=('Arial', 12), command=lambda: update_week(1))
 
 
     days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс']
 
     current_monday = get_monday(date.today())
+    define_month()
     month_Label = tk.Label(days_frame, bg='gray',text=current_monday.strftime('%B %Y'), font=('Arial', 18))
-    month_Label.grid(row=0, column=0, columnspan=7)
+    month_Label.grid(row=0, column=+1, columnspan=7)
     buttons = []
     for i,day in enumerate(['Пн','Вт','Ср','Чт','Пт','Сб','Вс']):
         button = tk.Button(days_frame, text = '', width=4)
-        button.grid(row=1,column=i)
+        button.grid(row=1,column=i+1)
         buttons.append(button)
-        tk.Label(days_frame,text=day, bg = 'gray', font=('Arial', 18)).grid(row=2,column=i)
+        tk.Label(days_frame,text=day, bg = 'gray', font=('Arial', 18)).grid(row=2,column=i+1)
     print(current_monday)
     PACPICANIE_Button.grid(row=0, column=0)
     OCENKN_Button.grid(row=0, column=1)
     D3_Button.grid(row=0, column=2)
     PROFIL_Button.grid(row=0, column=3)
     KLACC_Button.grid(row=0, column=4)
-    prev_button.grid(row=3,column=1)
-    next_button.grid(row=3,column=2)
+    prev_button.grid(row=1,column=0)
+    next_button.grid(row=1,column=8)
     student_frame.pack()
     days_frame.pack()
     update_week()
 
 
 def open_teaher_window():
+    global current_monday, buttons, month_Label, days_frame
     frame.pack_forget()
     root.title('ФЭШ')
     teacher_frame=tk.Frame(root, bg='gray')
     FASH_V_Label = tk.Label(teacher_frame, text='ФЭШ', font=('Arial', 21), bg='gray')
-    Teacher_Label = tk.Label(teacher_frame, text='Учитель', font=('Arial', 21), bg='Cyan')
+    Teacher_Label = tk.Label(teacher_frame, text='Учитель', font=('Arial', 21), bg='Cyan', compound="center")
     FASH_V_Label.grid(row=0, column=0)
     Teacher_Label.grid(row=0, column=1)
     teacher_frame.pack(anchor='nw')
@@ -193,9 +230,8 @@ root = tk.Tk()
 root.title('Фейковая Электронная Школа')
 root.geometry('1012x512')
 root.configure(bg='gray')
-img = Image.open("FASH.png").resize((1000, 1000)) # Укажите нужный размер
-icon = ImageTk.PhotoImage(img)
-root.tk.call('wm', 'iconphoto', root._w, icon)
+
+
 
 
 
@@ -217,5 +253,7 @@ auth_button = tk.Button(frame, text='Вход', font=('Arial', 21), bg='gray', f
 root.after(2000, main_app)
 current_monday = date.today()
 buttons = []
+month_Label = tk.Label(bg='gray',text=current_monday.strftime('%B %Y'), font=('Arial', 18))
+days_frame = tk.Frame(root, bg='gray')
 frame.pack()
 root.mainloop()
