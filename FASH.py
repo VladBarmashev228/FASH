@@ -89,6 +89,8 @@ def open_registration_window():
         cursor = conn.cursor()
         cursor.execute('INSERT INTO users(fullname,phone,password,gender,role) VALUES(?,?,?,?,?)',
                        (fio, nom, pas, pol_v, rol_v))
+        messagebox.showinfo('Вы успешно зарегистрированы!', 'Нажмите на <<OK>> и войдите в свой созданный аккаунт!', )
+        reg_window.destroy()
         conn.commit()
     POLZ_Button = tk.Button(reg_window, text='Cтать пользователем ФЭШ', font=('Arial', 21), bg='gray', command=register)
     POLZ_Button.grid(row=7, column=0)
