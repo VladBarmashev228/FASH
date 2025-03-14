@@ -43,6 +43,7 @@ def open_registration_window():
     reg_window.geometry('912x512')
     reg_window.title('ФЭШ,регистрация')
     reg_window.configure(bg='gray')
+    PR_Label = tk.Label(reg_window, text='!Предупреждение: после регистрации вам нужно будет войти в созданный вами аккаунт!', font=('Arial', 15), bg='gray')
     DAN_label = tk.Label(reg_window, text='Пожалуйста, введите свои данные:', font=('Arial', 21), bg='gray')
     FIO_label = tk.Label(reg_window, text='ФИО:', font=('Arial', 21), bg='gray')
     FIO_entry = tk.Entry(reg_window, width=30)
@@ -91,6 +92,7 @@ def open_registration_window():
                        (fio, nom, pas, pol_v, rol_v))
         messagebox.showinfo('Вы успешно зарегистрированы!', 'Нажмите на <<OK>> и войдите в свой созданный аккаунт!', )
         reg_window.destroy()
+        # messagebox.showerror('Ошибка!', 'Неверный номер телефона или пароль!')
         conn.commit()
     POLZ_Button = tk.Button(reg_window, text='Cтать пользователем ФЭШ', font=('Arial', 21), bg='gray', command=register)
     POLZ_Button.grid(row=7, column=0)
@@ -188,9 +190,29 @@ def open_teaher_window():
     teacher_frame=tk.Frame(root, bg='gray')
     FASH_V_Label = tk.Label(teacher_frame, text='ФЭШ', font=('Arial', 21), bg='gray')
     Teacher_Label = tk.Label(teacher_frame, text='Учитель', font=('Arial', 21), bg='Cyan', compound="center")
+    prev_button = tk.Button(days_frame, text='←', font=('Arial', 12), command=lambda: update_week(-1))
+    next_button = tk.Button(days_frame, text='→', font=('Arial', 12), command=lambda: update_week(1))
+
+    days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+
+    current_monday = get_monday(date.today())
+    define_month()
+    month_Label = tk.Label(days_frame, bg='gray', text=current_monday.strftime('%B %Y'), font=('Arial', 18))
+    month_Label.grid(row=0, column=+1, columnspan=7)
+    buttons = []
+    for i, day in enumerate(['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']):
+        button = tk.Button(days_frame, text='', width=4)
+        button.grid(row=1, column=i + 1)
+        buttons.append(button)
+        tk.Label(days_frame, text=day, bg='gray', font=('Arial', 18)).grid(row=2, column=i + 1)
+    print(current_monday)
     FASH_V_Label.grid(row=0, column=0)
     Teacher_Label.grid(row=0, column=1)
     teacher_frame.pack(anchor='nw')
+    prev_button.grid(row=1,column=0)
+    next_button.grid(row=1,column=8)
+    days_frame.pack()
+    update_week()
 
 def open_login_window():
     login_window = tk.Toplevel(root)
@@ -230,7 +252,7 @@ def open_login_window():
 
 root = tk.Tk()
 root.title('Фейковая Электронная Школа')
-root.geometry('1012x512')
+root.geometry('1012x612')
 root.configure(bg='gray')
 
 

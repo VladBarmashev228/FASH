@@ -1,5 +1,11 @@
 import sqlite3
-from datetime import date
+from datetime import  datetime
+import tkinter as tk
+from tkinter import *
+from tkinter import ttk
+
+# def show_timetable():
+#     for i, row
 
 # Подключаемся к базе данных
 conn = sqlite3.connect('fash.db')
@@ -173,3 +179,64 @@ cursor = conn.cursor()
 #             ('Егорова Наталья Ивановна',), ('Шмидт Павел Константинович',), ('Гусева Алла Николаевна',)]
 # cursor.executemany('INSERT INTO Teacher (name) VALUES (?)', teachers)
 # conn.commit()
+student_id = 1
+current_date = datetime.today().strftime('%Y-%m-%d')
+weekday = 'Пн'
+
+SQL_QUERY = """
+WITH TodaySchedule AS (
+    SELECT t.class_id, t.weekday, t.lesson_order, t.start_time, t.end_time,
+           t.subject_id, t.classroom, t.homework
+    FROM Timetable t
+    WHERE t.class_id = (SELECT class_id FROM Student WHERE student_id = ?)
+      AND t.weekday = ?
+   )
+SELECT ts.lesson_order, ts.start_time || '-' || ts.end_time AS lesson_time,
+       ts.classroom, sub.name AS subject_name, ts.homework,
+       (SELECT json_group_array(json_object('value', g.grade_value))
+        FROM Grade g
+        JOIN Topic top ON g.topic_id = top.topic_id
+        WHERE g.student_id = ? AND top.subject_id = ts.subject_id) AS grades
+FROM TodaySchedule ts
+JOIN Subject sub ON ts.subject_id = sub.subject_id
+GROUP BY ts.lesson_order
+ORDER BY ts.lesson_order;
+"""
+# cursor.execute(SQL_QUERY)
+
+cursor.execute(SQL_QUERY, (student_id, weekday, student_id))
+timetable = cursor.fetchall()
+conn.close()
+
+
+
+def display_schedule():
+    global subjects_frame
+    for i,row in enumerate(timetable):
+        lesson_frame = ttk.Frame(subjects_frame,relief="groove",borderwidth=2, padding=5)
+        lesson_frame.pack()
+
+        title=f'{row[0]} урок  {row[1]} , кабинет {row[2]}'
+
+root = Tk()
+root.title('ds')
+root.geometry('1012x512')
+root.configure(bg='gray')
+subjects_frame = tk.Frame(root,bg='gray')
+subjects_frame.pack()
+if not timetable:
+    subject_frame = tk.Frame(root)
+    no_subjects_label = tk.Label(subject_frame, text='Ура! Сегодня нет уроков!',font=('Arial', 21), bg='gray', )
+    subject_frame.pack()
+    no_subjects_label.pack()
+
+else:
+    display_schedule()
+
+
+
+print(timetable)
+
+
+
+root.mainloop()
