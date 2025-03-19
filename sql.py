@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from datetime import  datetime
 import tkinter as tk
@@ -92,21 +93,23 @@ cursor = conn.cursor()
 #     FOREIGN KEY (subject_id) REFERENCES Subject (subject_id)
 # )
 # ''')
-#
-# # Таблица Grade (Оценки)
-# cursor.execute('''
-# CREATE TABLE IF NOT EXISTS Grade (
-#     grade_id INTEGER PRIMARY KEY AUTOINCREMENT,
-#     student_id INTEGER,
-#     topic_id INTEGER,
-#     lesson_date TEXT,       -- Дата проведения урока для хронологической сортировки
-#     grade_type TEXT,        -- Тип оценки (например, контрольная, оценка с комментарием, "Н" – пропуск и т.д.)
-#     grade_value TEXT,       -- Значение оценки (числовое, буквенное и т.п.)
-#     comment TEXT,           -- Комментарий к оценке (если есть)
-#     FOREIGN KEY (student_id) REFERENCES Student (student_id),
-#     FOREIGN KEY (topic_id) REFERENCES Topic (topic_id)
-# )
-# ''')
+ # Таблица Grade (Оценки)
+ # cursor.execute('''
+ # CREATE TABLE IF NOT EXISTS Grade (
+ #     grade_id INTEGER PRIMARY KEY AUTOINCREMENT,
+ #     student_id INTEGER,
+ #     topic_id INTEGER,
+ #       subject_id INTEGER,
+ #     lesson_date TEXT,       -- Дата проведения урока для хронологической сортировки
+ #     grade_type TEXT,        -- Тип оценки (например, контрольная, оценка с комментарием, "Н" – пропуск и т.д.)
+ #     grade_value TEXT,       -- Значение оценки (числовое, буквенное и т.п.)
+ #     comment TEXT,           -- Комментарий к оценке (если есть)
+ #    FOREIGN KEY (student_id) REFERENCES Student (student_id),
+ #    FOREIGN KEY (topic_id) REFERENCES Topic (topic_id)
+ # )
+ # '''
+ #            )
+
 #
 # topics = [
 #     # Для Математики (subject_id = 1)
@@ -173,7 +176,7 @@ cursor = conn.cursor()
 # cursor.executemany('INSERT INTO Class (name) VALUES (?)', classes)
 #
 # # Пример заполнения таблицы Teacher данными
-# teachers = [('Иванов Иван Иванович',), ('Петров Петр Петрович',), ('Сидоров Сидор Сидорович',),
+# teachers = [('Иванов Иван Иванович',), ('Тотфалушина Ксения Викторовна',), ('Сидоров Сидор Сидорович',),
 #             ('Смирнова Ольга Викторовна',), ('Кузнецова Мария Александровна',),
 #             ('Михайлова Екатерина Сергеевна',), ('Федоров Алексей Владимирович',),
 #             ('Егорова Наталья Ивановна',), ('Шмидт Павел Константинович',), ('Гусева Алла Николаевна',)]
@@ -182,6 +185,7 @@ cursor = conn.cursor()
 student_id = 1
 current_date = datetime.today().strftime('%Y-%m-%d')
 weekday = 'Пн'
+
 
 SQL_QUERY = """
 WITH TodaySchedule AS (
@@ -214,9 +218,20 @@ def display_schedule():
     global subjects_frame
     for i,row in enumerate(timetable):
         lesson_frame = ttk.Frame(subjects_frame,relief="groove",borderwidth=2, padding=5)
-        lesson_frame.pack()
 
         title=f'{row[0]} урок  {row[1]} , кабинет {row[2]}'
+        title_label = tk.Label(lesson_frame,text=title)
+        subname_label = tk.Label(lesson_frame, text=row[3])
+        d3_label = tk.Label(lesson_frame, text=row[4])
+        title_label.pack()
+        subname_label.pack()
+        d3_label.pack()
+        lesson_frame.pack()
+        grades = json.loads(row['grades']) if row['grades'] else []
+
+        # for grade in grades()
+
+
 
 root = Tk()
 root.title('ds')

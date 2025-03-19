@@ -1,10 +1,9 @@
 import tkinter as tk
 import sqlite3
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from datetime import date
 from datetime import timedelta
 import os
-
 
 
 
@@ -148,7 +147,7 @@ def open_student_window():
     frame.pack_forget()
     root.title('Дневник ФЭШ')
     student_frame=tk.Frame(root, bg='gray')
-    PACPICANIE_Button = tk.Button(student_frame, text='Расписание', font=('Arial', 18), bg='gray')
+    PACPICANIE_Button = tk.Button(student_frame, text='Расписание', font=('Arial', 18), bg='gray', command=open_PACPICANIE_window)
     OCENKN_Button = tk.Button(student_frame, text='Оценки', font=('Arial', 18), bg='gray')
     D3_Button = tk.Button(student_frame, text='Домашние Задания', font=('Arial', 18), bg='gray')
     PROFIL_Button = tk.Button(student_frame, text='Профиль', font=('Arial', 18), bg='gray')
