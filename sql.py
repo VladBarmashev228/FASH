@@ -10,6 +10,7 @@ from tkinter import ttk
 
 # Подключаемся к базе данных
 conn = sqlite3.connect('fash.db')
+conn.row_factory = sqlite3.Row
 cursor = conn.cursor()
 #
 # # Создание таблицы Class (Класс)
@@ -212,7 +213,8 @@ cursor.execute(SQL_QUERY, (student_id, weekday, student_id))
 timetable = cursor.fetchall()
 conn.close()
 
-
+def get_image_path(type,value):
+    if type == 'оценка':
 
 def display_schedule():
     global subjects_frame
@@ -226,12 +228,19 @@ def display_schedule():
         title_label.pack()
         subname_label.pack()
         d3_label.pack()
-        lesson_frame.pack()
+        lesson_frame.pack(side=tk.LEFT)
         grades = json.loads(row['grades']) if row['grades'] else []
+        grades_frame = tk.Frame(lesson_frame,bg='gray80')
+        grade = grades[0]
+        # for grade in grades:
+        #     grade_label = tk.Label(grades_frame, text=)
+        foto= tk.PhotoImage(file='sssss.png')
+        foto = foto.subsample(5, 5)
+        grade_label = tk.Label(grades_frame, image=foto)
+        grade_label.photo = foto
 
-        # for grade in grades()
-
-
+        grades_frame.pack(side=tk.LEFT)
+        grade_label.pack()
 
 root = Tk()
 root.title('ds')
