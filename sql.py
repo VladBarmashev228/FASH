@@ -214,7 +214,49 @@ timetable = cursor.fetchall()
 conn.close()
 
 def get_image_path(type,value):
-    if type == 'оценка':
+    if type == 'оценка' and value == '5':
+        return 'оценка5.png'
+    if type == 'оценка' and value == '4':
+        return 'оценка4.png'
+    if type == 'оценка' and value == '3':
+        return 'оценка3.png'
+    if type == 'оценка' and value == '2':
+        return 'оценка2.png'
+
+    if type == 'оценкаКР' and value == '5':
+        return 'оценка5КР.png'
+    if type == 'оценкаКР' and value == '4':
+        return 'оценка4КР.png'
+    if type == 'оценкаКР' and value == '3':
+        return 'оценка3КР.png'
+    if type == 'оценкаКР' and value == '2':
+        return 'оценка2КР.png'
+
+    if type == 'оценкаКОММ' and value == '5':
+        return 'оценка5ком.png'
+    if type == 'оценкаКОММ' and value == '4':
+        return 'оценка4ком.png'
+    if type == 'оценкаКОММ' and value == '3':
+        return 'оценка3ком.png'
+    if type == 'оценкаКОММ' and value == '2':
+        return 'оценка2ком.png'
+
+    if type == 'оценкаКРКОММ' and value == '5':
+        return 'оценка5КР.ком.png'
+    if type == 'оценкаКРКОММ' and value == '4':
+        return 'оценка4КР.ком.png'
+    if type == 'оценкаКРКОММ' and value == '3':
+        return 'оценка3КР.ком.png'
+    if type == 'оценкаКРКОММ' and value == '2':
+        return 'оценка2КР.ком.png'
+
+    if type == 'оценкаможниспр' and value == '4':
+        return 'оценка4.можниспр.png'
+    if type == 'оценкаможниспр' and value == '3':
+        return 'оценка3.можниспр.png'
+    if type == 'оценкаможниспр' and value == '2':
+        return 'оценка2.можниспр.png'
+
 
 def display_schedule():
     global subjects_frame
