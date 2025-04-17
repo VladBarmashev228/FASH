@@ -35,7 +35,10 @@ cursor = conn.cursor()
 #
 # ''')
 # conn.commit()
-#
+cursor.execute('''
+ALTER TABLE Grade 
+ ADD COLUMN view TEXT''')
+conn.commit()
 #
 #
 # # Создание таблицы Subject (Предмет)
@@ -198,7 +201,7 @@ WITH TodaySchedule AS (
    )
 SELECT ts.lesson_order, ts.start_time || '-' || ts.end_time AS lesson_time,
        ts.classroom, sub.name AS subject_name, ts.homework,
-       (SELECT json_group_array(json_object('value', g.grade_value))
+       (SELECT json_group_array(json_object('value', g.grade_value, 'type', g.grade_type, 'view', g.view))
         FROM Grade g
         JOIN Topic top ON g.topic_id = top.topic_id
         WHERE g.student_id = ? AND top.subject_id = ts.subject_id) AS grades
@@ -276,7 +279,8 @@ def display_schedule():
         grade = grades[0]
         # for grade in grades:
         #     grade_label = tk.Label(grades_frame, text=)
-        foto= tk.PhotoImage(file='sssss.png')
+        image_path = get_image_path(grade[1],grade[2])
+        foto= tk.PhotoImage(file=image_path)
         foto = foto.subsample(5, 5)
         grade_label = tk.Label(grades_frame, image=foto)
         grade_label.photo = foto
