@@ -35,10 +35,10 @@ cursor = conn.cursor()
 #
 # ''')
 # conn.commit()
-cursor.execute('''
-ALTER TABLE Grade 
- ADD COLUMN view TEXT''')
-conn.commit()
+# cursor.execute('''
+# ALTER TABLE Grade
+#  ADD COLUMN view TEXT''')
+# conn.commit()
 #
 #
 # # Создание таблицы Subject (Предмет)
@@ -265,27 +265,30 @@ def display_schedule():
     global subjects_frame
     for i,row in enumerate(timetable):
         lesson_frame = ttk.Frame(subjects_frame,relief="groove",borderwidth=2, padding=5)
-
+        text_frame = ttk.Frame(lesson_frame)
+        text_frame.pack(side=tk.LEFT)
         title=f'{row[0]} урок  {row[1]} , кабинет {row[2]}'
-        title_label = tk.Label(lesson_frame,text=title)
-        subname_label = tk.Label(lesson_frame, text=row[3])
-        d3_label = tk.Label(lesson_frame, text=row[4])
+        title_label = tk.Label(text_frame,text=title)
+        subname_label = tk.Label(text_frame, text=row[3])
+        d3_label = tk.Label(text_frame, text=row[4])
         title_label.pack()
         subname_label.pack()
         d3_label.pack()
-        lesson_frame.pack(side=tk.LEFT)
+        lesson_frame.pack()
         grades = json.loads(row['grades']) if row['grades'] else []
         grades_frame = tk.Frame(lesson_frame,bg='gray80')
         grade = grades[0]
+        print('Формат', grade)
         # for grade in grades:
         #     grade_label = tk.Label(grades_frame, text=)
-        image_path = get_image_path(grade[1],grade[2])
+        image_path = get_image_path(grade['view'],grade['value'])
+        print(image_path)
         foto= tk.PhotoImage(file=image_path)
         foto = foto.subsample(5, 5)
-        grade_label = tk.Label(grades_frame, image=foto)
+        grade_label = tk.Button(grades_frame, image=foto)
         grade_label.photo = foto
 
-        grades_frame.pack(side=tk.LEFT)
+        grades_frame.pack(side=tk.RIGHT, padx=20 )
         grade_label.pack()
 
 root = Tk()

@@ -170,6 +170,7 @@ def open_student_window():
         buttons.append(button)
         tk.Label(days_frame,text=day, bg = 'gray', font=('Arial', 18)).grid(row=2,column=i+1)
     print(current_monday)
+    pacpicanie_frame=tk.Frame(student_frame)
     PACPICANIE_Button.grid(row=0, column=0)
     OCENKN_Button.grid(row=0, column=1)
     D3_Button.grid(row=0, column=2)
