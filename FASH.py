@@ -1,7 +1,8 @@
+import json
 import tkinter as tk
 import sqlite3
 from tkinter import messagebox, ttk
-from datetime import date
+from datetime import date, datetime
 from datetime import timedelta
 import os
 
@@ -131,7 +132,8 @@ def open_OCENKI_widnow():
 def open_D3_window():
     pass
 def open_PROFIL_window():
-    pass
+    subjects_frame.pack_forget()
+    days_frame.pack_forget()
 def open_KLACC_window():
     pass
 
@@ -141,7 +143,112 @@ def open_HYPNALI_teacher_window():
     pass
 def open_KLACCI_teacher_window():
     pass
+student_id = 1
+current_date = datetime.today().strftime('%Y-%m-%d')
+weekday = 'Пн'
 
+
+SQL_QUERY = """
+WITH TodaySchedule AS (
+    SELECT t.class_id, t.weekday, t.lesson_order, t.start_time, t.end_time,
+           t.subject_id, t.classroom, t.homework
+    FROM Timetable t
+    WHERE t.class_id = (SELECT class_id FROM Student WHERE student_id = ?)
+      AND t.weekday = ?
+   )
+SELECT ts.lesson_order, ts.start_time || '-' || ts.end_time AS lesson_time,
+       ts.classroom, sub.name AS subject_name, ts.homework,
+       (SELECT json_group_array(json_object('value', g.grade_value, 'type', g.grade_type, 'view', g.view))
+        FROM Grade g
+        JOIN Topic top ON g.topic_id = top.topic_id
+        WHERE g.student_id = ? AND top.subject_id = ts.subject_id) AS grades
+FROM TodaySchedule ts
+JOIN Subject sub ON ts.subject_id = sub.subject_id
+GROUP BY ts.lesson_order
+ORDER BY ts.lesson_order;
+"""
+# cursor.execute(SQL_QUERY)
+conn = sqlite3.connect('fash.db')
+conn.row_factory = sqlite3.Row
+cursor = conn.cursor()
+cursor.execute(SQL_QUERY, (student_id, weekday, student_id))
+timetable = cursor.fetchall()
+conn.close()
+
+def get_image_path(type,value):
+    if type == 'оценка' and value == '5':
+        return 'оценка5.png'
+    if type == 'оценка' and value == '4':
+        return 'оценка4.png'
+    if type == 'оценка' and value == '3':
+        return 'оценка3.png'
+    if type == 'оценка' and value == '2':
+        return 'оценка2.png'
+
+    if type == 'оценкаКР' and value == '5':
+        return 'оценка5КР.png'
+    if type == 'оценкаКР' and value == '4':
+        return 'оценка4КР.png'
+    if type == 'оценкаКР' and value == '3':
+        return 'оценка3КР.png'
+    if type == 'оценкаКР' and value == '2':
+        return 'оценка2КР.png'
+
+    if type == 'оценкаКОММ' and value == '5':
+        return 'оценка5ком.png'
+    if type == 'оценкаКОММ' and value == '4':
+        return 'оценка4ком.png'
+    if type == 'оценкаКОММ' and value == '3':
+        return 'оценка3ком.png'
+    if type == 'оценкаКОММ' and value == '2':
+        return 'оценка2ком.png'
+
+    if type == 'оценкаКРКОММ' and value == '5':
+        return 'оценка5КР.ком.png'
+    if type == 'оценкаКРКОММ' and value == '4':
+        return 'оценка4КР.ком.png'
+    if type == 'оценкаКРКОММ' and value == '3':
+        return 'оценка3КР.ком.png'
+    if type == 'оценкаКРКОММ' and value == '2':
+        return 'оценка2КР.ком.png'
+
+    if type == 'оценкаможниспр' and value == '4':
+        return 'оценка4.можниспр.png'
+    if type == 'оценкаможниспр' and value == '3':
+        return 'оценка3.можниспр.png'
+    if type == 'оценкаможниспр' and value == '2':
+        return 'оценка2.можниспр.png'
+
+
+def display_schedule():
+    global subjects_frame
+    for i,row in enumerate(timetable):
+        lesson_frame = ttk.Frame(subjects_frame,relief="groove",borderwidth=2, padding=5)
+        text_frame = ttk.Frame(lesson_frame)
+        text_frame.pack(side=tk.LEFT)
+        title=f'{row[0]} урок  {row[1]} , кабинет {row[2]}'
+        title_label = tk.Label(text_frame,text=title)
+        subname_label = tk.Label(text_frame, text=row[3])
+        d3_label = tk.Label(text_frame, text=row[4])
+        title_label.pack()
+        subname_label.pack()
+        d3_label.pack()
+        lesson_frame.pack()
+        grades = json.loads(row['grades']) if row['grades'] else []
+        grades_frame = tk.Frame(lesson_frame,bg='gray80')
+        grade = grades[0]
+        print('Формат', grade)
+        # for grade in grades:
+        #     grade_label = tk.Label(grades_frame, text=)
+        image_path = get_image_path(grade['view'],grade['value'])
+        print(image_path)
+        foto= tk.PhotoImage(file=image_path)
+        foto = foto.subsample(5, 5)
+        grade_label = tk.Button(grades_frame, image=foto)
+        grade_label.photo = foto
+
+        grades_frame.pack(side=tk.RIGHT, padx=20 )
+        grade_label.pack()
 def open_student_window():
     global current_monday, buttons, month_Label, days_frame
     frame.pack_forget()
@@ -150,7 +257,7 @@ def open_student_window():
     PACPICANIE_Button = tk.Button(student_frame, text='Расписание', font=('Arial', 18), bg='gray', command=open_PACPICANIE_window)
     OCENKN_Button = tk.Button(student_frame, text='Оценки', font=('Arial', 18), bg='gray')
     D3_Button = tk.Button(student_frame, text='Домашние Задания', font=('Arial', 18), bg='gray')
-    PROFIL_Button = tk.Button(student_frame, text='Профиль', font=('Arial', 18), bg='gray')
+    PROFIL_Button = tk.Button(student_frame, text='Профиль', font=('Arial', 18), bg='gray', command=open_PROFIL_window)
     KLACC_Button = tk.Button(student_frame, text='Класс', font=('Arial', 18), bg='gray')
     # days_frame=tk.Frame(root, bg='gray')
     prev_button = tk.Button(days_frame, text ='←', font=('Arial', 12), command=lambda:update_week(-1))
@@ -178,9 +285,13 @@ def open_student_window():
     KLACC_Button.grid(row=0, column=4)
     prev_button.grid(row=1,column=0)
     next_button.grid(row=1,column=8)
+
     student_frame.pack()
     days_frame.pack()
+    display_schedule()
+    subjects_frame.pack()
     update_week()
+
 
 
 def open_teaher_window():
@@ -276,6 +387,8 @@ auth_button = tk.Button(frame, text='Вход', font=('Arial', 21), bg='gray', f
 
 root.after(2000, main_app)
 current_monday = date.today()
+subjects_frame = tk.Frame(root,bg='gray')
+
 buttons = []
 month_Label = tk.Label(bg='gray',text=current_monday.strftime('%B %Y'), font=('Arial', 18))
 days_frame = tk.Frame(root, bg='gray')
