@@ -12,6 +12,12 @@ from tkinter import ttk
 conn = sqlite3.connect('fash.db')
 conn.row_factory = sqlite3.Row
 cursor = conn.cursor()
+
+cursor.execute("""
+ALTER TABLE Student 
+ADD COLUMN avatar_path TEXT
+""")
+conn.commit()
 #
 # # Создание таблицы Class (Класс)
 # cursor.execute('''
