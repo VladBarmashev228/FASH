@@ -1,7 +1,7 @@
 import json
 import tkinter as tk
 import sqlite3
-from tkinter import messagebox, ttk
+from tkinter import messagebox, ttk, filedialog
 from datetime import date, datetime
 from datetime import timedelta
 import os
@@ -145,12 +145,26 @@ def open_OCENKI_widnow():
 def open_D3_window():
     pass
 
+def open_files():
+
+    global img
+    files_path=filedialog.askopenfilename(
+      title= 'Выберите фотографию на аватар',
+        filetypes=[('Image Files', '*.png;*.jpg;*.jpeg;*.bmp')]
+    )
+    img = load_image(files_path)
+
+    button.config(image=img)
+
+button = ''
 
 def open_PROFIL_window():
+    global img, button
     subjects_frame.pack_forget()
     days_frame.pack_forget()
-    img=load_image()
-    button = tk.Button(image=)
+    img=load_image(r"C:\Users\BlackBox2\PycharmProjects\FASH\FASH.png")
+    button = tk.Button(root, image=img,  text='hello', command=open_files)
+    button.pack()
 
 def load_image(path,size=(150,150)):
     try:
@@ -422,7 +436,7 @@ auth_button = tk.Button(frame, text='Вход', font=('Arial', 21), bg='gray', f
 root.after(2000, main_app)
 current_monday = date.today()
 subjects_frame = tk.Frame(root, bg='gray')
-
+img =''
 buttons = []
 month_Label = tk.Label(bg='gray', text=current_monday.strftime('%B %Y'), font=('Arial', 18))
 days_frame = tk.Frame(root, bg='gray')
