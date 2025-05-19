@@ -161,7 +161,7 @@ def open_files():
     UPDATE Student
     SET avatar_path = ?
     WHERE phone=?
-    ''', (img, user[6]))
+    ''', (files_path, user[6]))
     conn.commit()
 
 button = ''
