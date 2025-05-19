@@ -15,7 +15,7 @@ cursor = conn.cursor()
 
 cursor.execute("""
 ALTER TABLE Student 
-ADD COLUMN avatar_path TEXT
+ADD COLUMN role TEXT
 """)
 conn.commit()
 #

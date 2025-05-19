@@ -17,7 +17,7 @@ def main_app():
 
 
 def connect_db():
-    return sqlite3.connect("users.db")
+    return sqlite3.connect("fash.db")
 
 
 # Создание таблицы пользователей, если она не существует
@@ -155,6 +155,14 @@ def open_files():
     img = load_image(files_path)
 
     button.config(image=img)
+    conn=connect_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+    UPDATE Student
+    SET avatar_path = ?
+    WHERE phone=?
+    ''', (img, user[6]))
+    conn.commit()
 
 button = ''
 
@@ -162,9 +170,9 @@ def open_PROFIL_window():
     global img, button
     subjects_frame.pack_forget()
     days_frame.pack_forget()
-    img=load_image(r"C:\Users\BlackBox2\PycharmProjects\FASH\FASH.png")
+    img=load_image(user[3])
     button = tk.Button(root, image=img,  text='hello', command=open_files)
-    button.pack()
+    button.pack(pady=20)
 
 def load_image(path,size=(150,150)):
     try:
@@ -392,17 +400,18 @@ def open_login_window():
     PAROL_Entry.grid(row=2, column=1)
 
     def login():
+        global user
         phone_number = NOM2_Entry.get()
         password = PAROL_Entry.get()
         conn = connect_db()
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM users WHERE phone=? and password=?', (phone_number, password))
+        cursor.execute('SELECT * FROM Student WHERE phone=? and password=?', (phone_number, password))
         user = cursor.fetchone()
         print(user)
         if user is not None:
             messagebox.showinfo('Вы успешно авторизованы!', 'Нажмите на <<OK>> и вы попадёте в ФЭШ!', )
             login_window.destroy()
-            if user[5] == 'Ученик':
+            if user[7] == 'Ученик':
                 open_student_window()
             else:
                 open_teaher_window()
@@ -417,7 +426,7 @@ root = tk.Tk()
 root.title('Фейковая Электронная Школа')
 root.geometry('1012x612')
 root.configure(bg='gray')
-
+user = None
 # Регистрация или вход
 frame = tk.Frame(root, bg='gray')
 
