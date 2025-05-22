@@ -1,10 +1,11 @@
 import json
 import tkinter as tk
 import sqlite3
-from tkinter import messagebox, ttk, filedialog
+from tkinter import messagebox, ttk, filedialog, StringVar
 from datetime import date, datetime
 from datetime import timedelta
 import os
+from tkinter.constants import RIGHT, LEFT
 
 from PIL import Image,ImageTk
 
@@ -170,9 +171,21 @@ def open_PROFIL_window():
     global img, button
     subjects_frame.pack_forget()
     days_frame.pack_forget()
+    avatar_frame=tk.Frame(root,bg='gray')
+    avatar_frame.pack()
+
     img=load_image(user[3])
-    button = tk.Button(root, image=img,  text='hello', command=open_files)
-    button.pack(pady=20)
+    button = tk.Button(avatar_frame, image=img,  text='hello', command=open_files)
+    button.pack(pady=20,side=LEFT)
+    button_settings=tk.Button(avatar_frame, text='Настройки',command=open_settings_window)
+    button_settings.pack(anchor='ne')
+def open_settings_window():
+    settings_window = tk.Toplevel(root)
+    settings_window.geometry('912x512')
+    settings_window.title('ФЭШ,Настройки')
+    settings_window.configure(bg='gray')
+    fio_var=StringVar()
+    fio_label=tk.Entry(settings_window,)
 
 def load_image(path,size=(150,150)):
     try:
@@ -181,6 +194,7 @@ def load_image(path,size=(150,150)):
         img=Image.new('RGB',size, color='gray')
     img=img.resize(size,Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(img)
+
 
 
 def open_KLACC_window():
